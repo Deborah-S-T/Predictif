@@ -38,7 +38,7 @@ public class Predictif {
         //Inscription et authentification d'un client
         System.out.println("Inscription et authentification\n-------------------------------------------------");
         LocalDate date = LocalDate.parse("1802-02-26");
-        Client c1 = new Client("victor.hugo@insa-lyon.fr", "Hugo", "Victor", date, "13 rue Albert Einstein", "01 23 45 67 89", "m0tdepasse1");
+        Client c1 = new Client("victor.hugo@insa-lyon.fr", "Hugo", "Victor", date, "13 rue Albert Einstein 69100 Villeurbanne", "01 23 45 67 89", "m0tdepasse1");
         Boolean resultat = service.inscrireClient(c1);
         assert resultat;
         Client c12 = service.authentifierClient("victor.hugo@insa-lyon.fr", "m0tdepasse1");
@@ -47,7 +47,7 @@ public class Predictif {
         // Inscription et authentification du deuxième client
         System.out.println("Inscription et authentification\n-------------------------------------------------");
         LocalDate date2 = LocalDate.parse("1802-02-26");
-        Client c2 = new Client("tableau.hugo@insa-lyon.fr", "Hugo", "Tableau", date2, "12 rue Albert Einstein", "01 33 55 77 99", "m0tdepasse1");
+        Client c2 = new Client("tableau.hugo@insa-lyon.fr", "Hugo", "Tableau", date2, "12 rue Albert Einstein 69100 Villeurbanne", "01 33 55 77 99", "m0tdepasse1");
         Boolean resultat2 = service.inscrireClient(c2);
         assert resultat2;
         Client c22 = service.authentifierClient("tableau.hugo@insa-lyon.fr", "m0tdepasse1");
@@ -89,6 +89,14 @@ public class Predictif {
         System.out.println("get une prediction\n-------------------------------------------------");
         String pred = service.getPredictionEnCasPanneInspiration(c22, 1, 2, 4);
         System.out.println(pred);
+        System.out.println("\n-------------------------------------------------");
+        
+        System.out.println("get top 5 medium\n-------------------------------------------------");
+        long id_medium2 = 6;
+        Medium medium2 = service.getMediumById(id_medium2);
+        System.out.println(medium2);
+        service.demanderConsultation(c22, medium2);
+        System.out.println(service.getTop5Medium());
         System.out.println("\n-------------------------------------------------");
         
         /*String invite = "";

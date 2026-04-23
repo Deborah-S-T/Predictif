@@ -24,7 +24,9 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import metier.modele.Astrologue;
 import metier.modele.Cartomancien;
 import metier.modele.Consultation;
@@ -506,6 +508,42 @@ public class Service {
         }
         
         return aPuFinirConsultation;
+    }
+    
+    public List<Medium> getTop5Medium() {
+        List<Medium> topMedium = new ArrayList<>();
+        
+        // get toutes les consultations
+        List<Consultation> listConsultations = new ArrayList<>();
+        try {
+            JpaUtil.creerContextePersistance();
+            listConsultations = ConsultationDao.findAll();
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+        } finally {
+            JpaUtil.fermerContextePersistance();
+        }
+        
+        // hashmap avec medium : nbConslt
+        Map<Medium, Integer> nbConsultationParMedium = new HashMap<Medium, Integer>();
+        for (Consultation c : listConsultations) {
+            if (nbConsultationParMedium.get(c.getMedium()) != null) {
+                nbConsultationParMedium.put(c.getMedium(), nbConsultationParMedium.get(c.getMedium()) + 1);
+            }
+            else {
+                nbConsultationParMedium.put(c.getMedium(), 1); // Duplicate
+            }
+        }
+        List<Map.Entry<Medium, Integer>> sortedMediumConsultationNb = new ArrayList<>(nbConsultationParMedium.entrySet());
+        sortedMediumConsultationNb.sort(Map.Entry.comparingByValue());
+        
+        //System.out.println("listeConsultations : " + listConsultations);
+        //System.out.println("sortedMediumConsultationNb" + sortedMediumConsultationNb);
+        for (int i = sortedMediumConsultationNb.size()-1; (i >= sortedMediumConsultationNb.size()-5) && (i >= 0); i--) {
+            topMedium.add(sortedMediumConsultationNb.get(i).getKey());
+        }
+        
+        return topMedium;
     }
 }
     
