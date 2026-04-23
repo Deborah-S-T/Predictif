@@ -65,4 +65,15 @@ public class ClientDao {
         
         return consultations;
     }
+    
+    public static List<String> findAdressesClients()
+    {
+        String req = "select distinct c.adressePostal from Client c";
+        TypedQuery<String> query = JpaUtil.obtenirContextePersistance().createQuery(req, String.class);
+        
+        List<String> adresses = query.getResultList();
+        
+        return adresses;
+    }
+    
 }
