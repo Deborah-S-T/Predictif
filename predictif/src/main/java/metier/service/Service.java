@@ -525,6 +525,7 @@ public class Service {
         }
         
         // hashmap avec medium : nbConslt
+        // pour pouvoir compter le nombre de consultations
         Map<Medium, Integer> nbConsultationParMedium = new HashMap<>();
         for (Consultation c : listConsultations) {
             if (nbConsultationParMedium.get(c.getMedium()) != null) {
@@ -539,7 +540,7 @@ public class Service {
         
         //System.out.println("listeConsultations : " + listConsultations);
         //System.out.println("sortedMediumConsultationNb" + sortedMediumConsultationNb);
-        for (int i = sortedMediumConsultationNb.size()-1; (i >= sortedMediumConsultationNb.size()-5) && (i >= 0); i--) {
+        for (int i = sortedMediumConsultationNb.size()-1; (i >= 0) && (i >= sortedMediumConsultationNb.size()-5); i--) {
             topMedium.add(sortedMediumConsultationNb.get(i).getKey());
         }
         
@@ -559,6 +560,7 @@ public class Service {
         }
         
         // hashmap avec medium : nbConslt
+        // pour pouvoir compter le nombre de consultations
         Map<Medium, Integer> nbConsultationParMedium = new HashMap<>();
         for (Consultation c : listConsultations) {
             if (nbConsultationParMedium.get(c.getMedium()) != null) {
@@ -577,6 +579,46 @@ public class Service {
         }
         
         return somme/listMediumConsultationNb.size();
+    }
+    
+    public List<Client> getTop5Client() {
+        List<Client> topClient = new ArrayList<>();
+        
+        // get touts les clients
+        List<Client> listClients = new ArrayList<>();
+        try {
+            JpaUtil.creerContextePersistance();
+            listClients = ClientDao.findAll();
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+        } finally {
+            JpaUtil.fermerContextePersistance();
+        }
+        
+        // hashmap avec medium : nbConslt
+        // pour pouvoir trier les client
+//        Map<Client, Integer> nbConsultationParClient = new HashMap<>();
+//        for (Client c : listClients) {
+//            nbConsultationParClient.put(c, c.getListeConsultations().size());
+//        }
+//        List<Map.Entry<Client, Integer>> sortedClientConsultationNb = new ArrayList<>(nbConsultationParClient.entrySet());
+//        sortedClientConsultationNb.sort(Map.Entry.comparingByValue());
+        
+        Client temp; 
+        for (int i = 0; i<listClients.size()-1; i++) {
+            for (int j = 0; j<listClients.size() - i - 1; j++) {
+                if (listClients.get(j).getListeConsultations().size() < listClients.get(j+1).getListeConsultations().size()) {
+                    temp = listClients.get(j);
+                    listClients.set(j, listClients.get(j+1));
+                    listClients.set(j+1, temp);
+                }
+            }
+        }
+        for (int i = 0; (i < 5) && (i < listClients.size()); i++) {
+            topClient.add(listClients.get(i));
+        }
+        
+        return topClient;
     }
 }
     

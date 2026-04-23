@@ -103,6 +103,10 @@ public class Predictif {
         System.out.println(service.getNbConsultationMoyenneParMedium());
         System.out.println("\n-------------------------------------------------");
         
+        System.out.println("get top 5 clients\n-------------------------------------------------");
+        System.out.println(service.getTop5Client());
+        System.out.println("\n-------------------------------------------------");
+        
         /*String invite = "";
         Saisie.lireChaine(invite);*/
     }
