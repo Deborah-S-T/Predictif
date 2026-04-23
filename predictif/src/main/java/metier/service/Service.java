@@ -364,5 +364,45 @@ public class Service {
         
         return aPuSeMettrePret;
     }
+    
+    public Boolean finirConsultation(Employe employe, String commentaire) {
+        System.out.println("metier.service.Service.finirConsultation()");
+        Boolean aPuFinirConsultation = false;
+        LocalTime fin_heure = LocalTime.now();
+        
+        // le if ne devrai pas être necessaire mais au cas ou...
+        if (employe.getEstEnConsultation()) {
+            // mettre a jour l'heure de début de la consultation
+            // la derniere consultation de l'employe est celle qu'il traite actuellement
+            Consultation consultation = employe.getListeConsultations().get(employe.getListeConsultations().size() - 1);
+            consultation.setHeureFin(fin_heure);
+            consultation.setCommentaire(commentaire);
+            
+            // mettre l'employe disponible
+            employe.setEstEnConsultation(false);
+
+            try {
+                JpaUtil.creerContextePersistance();
+                // mettre a jours consultation dans la base de données
+                JpaUtil.ouvrirTransaction();
+                
+                ConsultationDao.update(consultation);
+                EmployeDao.update(employe);
+                
+                JpaUtil.validerTransaction();
+                aPuFinirConsultation = true;
+            } catch (Exception e) {
+                JpaUtil.annulerTransaction();
+                e.printStackTrace(System.err);
+            } finally {
+                JpaUtil.creerContextePersistance();
+            }
+        }
+        else {
+            System.out.println("L'employe que vous essayez de mettre pret n'est pas en consultation");
+        }
+        
+        return aPuFinirConsultation;
+    }
 }
     

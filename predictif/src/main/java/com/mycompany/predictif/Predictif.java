@@ -75,9 +75,15 @@ public class Predictif {
         System.out.println(service.getListeAdressesClients());
         System.out.println("\n-------------------------------------------------");
         
-        System.out.println("se mettre pret\n-------------------------------------------------");
+        // l'employe en consultation pour les deux prochains services
         Employe employe = service.authentifierEmploye("paul.retourne@insa-lyon.fr", "mdppaul");
+        System.out.println("se mettre pret\n-------------------------------------------------");
         service.seMettrePret(employe);
+        System.out.println("\n-------------------------------------------------");
+        
+        System.out.println("finir la consultation\n-------------------------------------------------");
+        String commentaire = "J'ai prédit ça... elle a réagit comme ça...";
+        service.finirConsultation(employe, commentaire);
         System.out.println("\n-------------------------------------------------");
         
         /*String invite = "";
