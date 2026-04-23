@@ -365,6 +365,56 @@ public class Service {
         return aPuSeMettrePret;
     }
     
+    public String getPredictionEnCasPanneInspiration(Client client, int amour, int sante, int travail) {
+        JsonObject result = null;
+        String prediction = "";
+        String couleur = client.getProfil().getCouleur();
+        String animal = client.getProfil().getAnimal();
+        
+        try {
+            // TODO: adapter l'URL de l'API et la liste des paramètres
+            URI requestUri = URI.create(
+                    "https://servif.insa-lyon.fr/WebDataGenerator/Astro"
+                    + "?service=" + URLEncoder.encode("predictions", StandardCharsets.UTF_8)
+                    + "&key=" + URLEncoder.encode("ASTRO-01-M0lGLURBU0ktQVNUUk8tQjAx", StandardCharsets.UTF_8)
+                    + "&couleur=" + URLEncoder.encode(couleur, StandardCharsets.UTF_8)
+                    + "&animal=" + URLEncoder.encode(animal, StandardCharsets.UTF_8)
+                    + "&niveau-amour=" + URLEncoder.encode(Integer.toString(amour), StandardCharsets.UTF_8)
+                    + "&niveau-sante=" + URLEncoder.encode(Integer.toString(sante), StandardCharsets.UTF_8)
+                    + "&niveau-travail=" + URLEncoder.encode(Integer.toString(travail), StandardCharsets.UTF_8)
+            );
+
+            HttpClient httpClient = HttpClient.newHttpClient();
+            HttpRequest httpRequest = HttpRequest.newBuilder(requestUri).GET().build();
+            HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+
+            if (httpResponse.statusCode() == 200) {
+                String body = httpResponse.body();
+                //System.out.println(body);
+
+                result = Json.createReader(new StringReader(body)).readObject();
+                
+                //System.out.println(result.toString());
+                //{"profil-valide":true,"prediction-amour":"Votre charme n'est pas au mieux ! Oubliez vos ambitions amoureuses pour quelques temps, et concentrez-vous sur votre bien-être. Faites confiance à Mars pour la suite. Signe antagoniste: Capricorne.","prediction-sante":"Une journée ordinaire, mais attention aux courants d'air ! Restez vigilant tout au long de la journée, car la fatigue vous guette... Essayez de manger dans un endroit calme. Conseil: Allez voir préventivement le médecin.","prediction-travail":"Très collaboratif aujourd'hui, vous ferez preuve d'une énergie impressionnante. Rien ne vous arrêtera pour dépasser vos objectifs. Signe collaborateur: Bœuf."}                String pred = result.getString("prediction-amour");
+                String pred = result.getString("prediction-amour");
+                prediction += "Prediction amour : \n" + pred + "\n";
+                pred = result.getString("prediction-sante");
+                prediction += "Prediction sante : \n" + pred + "\n";
+                pred = result.getString("prediction-travail");
+                prediction += "Prediction travail : \n" + pred + "\n";
+                
+            } else {
+                throw new IOException("HTTP Error Status Code " + httpResponse.statusCode());
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace(System.err);
+            prediction = null;
+        }
+        
+        return prediction;
+    }
+    
     public Boolean finirConsultation(Employe employe, String commentaire) {
         System.out.println("metier.service.Service.finirConsultation()");
         Boolean aPuFinirConsultation = false;

@@ -86,6 +86,11 @@ public class Predictif {
         service.finirConsultation(employe, commentaire);
         System.out.println("\n-------------------------------------------------");
         
+        System.out.println("get une prediction\n-------------------------------------------------");
+        String pred = service.getPredictionEnCasPanneInspiration(c22, 1, 2, 4);
+        System.out.println(pred);
+        System.out.println("\n-------------------------------------------------");
+        
         /*String invite = "";
         Saisie.lireChaine(invite);*/
     }
