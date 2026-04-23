@@ -525,13 +525,13 @@ public class Service {
         }
         
         // hashmap avec medium : nbConslt
-        Map<Medium, Integer> nbConsultationParMedium = new HashMap<Medium, Integer>();
+        Map<Medium, Integer> nbConsultationParMedium = new HashMap<>();
         for (Consultation c : listConsultations) {
             if (nbConsultationParMedium.get(c.getMedium()) != null) {
                 nbConsultationParMedium.put(c.getMedium(), nbConsultationParMedium.get(c.getMedium()) + 1);
             }
             else {
-                nbConsultationParMedium.put(c.getMedium(), 1); // Duplicate
+                nbConsultationParMedium.put(c.getMedium(), 1);
             }
         }
         List<Map.Entry<Medium, Integer>> sortedMediumConsultationNb = new ArrayList<>(nbConsultationParMedium.entrySet());
@@ -544,6 +544,39 @@ public class Service {
         }
         
         return topMedium;
+    }
+    
+    public Double getNbConsultationMoyenneParMedium() {
+        // get toutes les consultations
+        List<Consultation> listConsultations = new ArrayList<>();
+        try {
+            JpaUtil.creerContextePersistance();
+            listConsultations = ConsultationDao.findAll();
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+        } finally {
+            JpaUtil.fermerContextePersistance();
+        }
+        
+        // hashmap avec medium : nbConslt
+        Map<Medium, Integer> nbConsultationParMedium = new HashMap<>();
+        for (Consultation c : listConsultations) {
+            if (nbConsultationParMedium.get(c.getMedium()) != null) {
+                nbConsultationParMedium.put(c.getMedium(), nbConsultationParMedium.get(c.getMedium()) + 1);
+            }
+            else {
+                nbConsultationParMedium.put(c.getMedium(), 1);
+            }
+        }
+        List<Map.Entry<Medium, Integer>> listMediumConsultationNb = new ArrayList<>(nbConsultationParMedium.entrySet());
+        
+        
+        Double somme = 0.0;
+        for (Map.Entry<Medium, Integer> nbConsltMedium : listMediumConsultationNb) {
+            somme += nbConsltMedium.getValue();
+        }
+        
+        return somme/listMediumConsultationNb.size();
     }
 }
     

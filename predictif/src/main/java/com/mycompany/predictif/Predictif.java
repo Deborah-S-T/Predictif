@@ -99,6 +99,10 @@ public class Predictif {
         System.out.println(service.getTop5Medium());
         System.out.println("\n-------------------------------------------------");
         
+        System.out.println("get moy nb consultation par medium\n-------------------------------------------------");
+        System.out.println(service.getNbConsultationMoyenneParMedium());
+        System.out.println("\n-------------------------------------------------");
+        
         /*String invite = "";
         Saisie.lireChaine(invite);*/
     }
