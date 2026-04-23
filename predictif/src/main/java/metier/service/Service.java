@@ -20,6 +20,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import metier.modele.Astrologue;
@@ -29,6 +31,7 @@ import metier.modele.Medium;
 import metier.modele.ProfilAstral;
 import metier.modele.Spirite;
 import metier.modele.Employe;
+import util.Message;
 
 /**
  *
@@ -295,6 +298,7 @@ public class Service {
             ClientDao.update(client);
             
             employeAffecte = true;
+            System.out.println("l'employe affecte est : " + employeLibre);
             JpaUtil.validerTransaction();
         }
         catch (Exception e) {
@@ -310,7 +314,7 @@ public class Service {
     
     public List<String> getListeAdressesClients() {
         List<String> adresses = new ArrayList<>();
-        System.out.println("metier.service.Service.demanderConsultation()");
+        System.out.println("metier.service.Service.getListeAdressesClients()");
         
         try {
             JpaUtil.creerContextePersistance();
@@ -321,6 +325,44 @@ public class Service {
             JpaUtil.fermerContextePersistance();
         }
         return adresses;
+    }
+    
+    public Boolean seMettrePret(Employe employe) {
+        System.out.println("metier.service.Service.seMettrePret()");
+        Boolean aPuSeMettrePret = false;
+        LocalTime deb_heure = LocalTime.now();
+        
+        // le if ne devrai pas être necessaire mais au cas ou...
+        if (employe.getEstEnConsultation()) {
+            // mettre a jour l'heure de début de la consultation
+            // la derniere consultation de l'employe est celle qu'il traite actuellement
+            Consultation consultation = employe.getListeConsultations().get(employe.getListeConsultations().size() - 1);
+            consultation.setHeureDebut(deb_heure);
+
+            // envoyer message au client avec le tel de l'employe
+            String telEmploye = employe.getNumeroTelephone();
+            String telClient = consultation.getClient().getNumeroTelephone();
+            Message.envoyerNotification(telClient,telEmploye);
+
+            try {
+                JpaUtil.creerContextePersistance();
+                // mettre a jours consultation dans la base de données
+                JpaUtil.ouvrirTransaction();
+                ConsultationDao.update(consultation);
+                JpaUtil.validerTransaction();
+                aPuSeMettrePret = true;
+            } catch (Exception e) {
+                JpaUtil.annulerTransaction();
+                e.printStackTrace(System.err);
+            } finally {
+                JpaUtil.creerContextePersistance();
+            }
+        }
+        else {
+            System.out.println("L'employe que vous essayez de mettre pret n'est pas en consultation");
+        }
+        
+        return aPuSeMettrePret;
     }
 }
     

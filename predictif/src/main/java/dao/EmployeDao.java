@@ -44,7 +44,7 @@ public class EmployeDao {
     
      public static Employe findByMailAndPassword(String mail, String password)
     {
-        String req = "select e from Employe e where e.mail = :unMail and e.motDePasse = :unMdp ";
+        String req = "select e from Employe e where e.mail = :unMail and e.password = :unMdp ";
         TypedQuery<Employe> query = JpaUtil.obtenirContextePersistance().createQuery(req, Employe.class);
         query.setParameter("unMail", mail);
         query.setParameter("unMdp", password);
