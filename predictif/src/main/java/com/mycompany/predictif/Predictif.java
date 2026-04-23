@@ -45,7 +45,7 @@ public class Predictif {
         // Inscription et authentification du deuxième client
         System.out.println("Inscription et authentification\n-------------------------------------------------");
         LocalDate date2 = LocalDate.parse("1802-02-26");
-        Client c2 = new Client("tableau.hugo@insa-lyon.fr", "Hugo", "Tableau", date2, "13 rue Albert Einstein", "01 23 45 67 89", "m0tdepasse1");
+        Client c2 = new Client("tableau.hugo@insa-lyon.fr", "Hugo", "Tableau", date2, "12 rue Albert Einstein", "01 23 45 67 89", "m0tdepasse1");
         Boolean resultat2 = service.inscrireClient(c2);
         assert resultat2;
         Client c22 = service.authentifierClient("tableau.hugo@insa-lyon.fr", "m0tdepasse1");
@@ -65,7 +65,8 @@ public class Predictif {
         service.demanderConsultation(c22, medium);
         
         
-        System.out.println("\n-------------------------------------------------");
+        System.out.println("Adresses clients\n-------------------------------------------------");
+        System.out.println(service.getListeAdressesClients());
         
         /*String invite = "";
         Saisie.lireChaine(invite);*/

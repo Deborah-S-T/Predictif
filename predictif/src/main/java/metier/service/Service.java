@@ -307,5 +307,20 @@ public class Service {
         }
         return employeAffecte;
     }
+    
+    public List<String> getListeAdressesClients() {
+        List<String> adresses = new ArrayList<>();
+        System.out.println("metier.service.Service.demanderConsultation()");
+        
+        try {
+            JpaUtil.creerContextePersistance();
+            adresses = ClientDao.findAdressesClients();
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+        } finally {
+            JpaUtil.fermerContextePersistance();
+        }
+        return adresses;
+    }
 }
     
