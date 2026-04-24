@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predict'IF - Consultation en cours</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #1A1B2F;
+            --gold: #D4AF37;
+            --purple: #4B0082;
+            --white: #F5F5F5;
+            --gray: #A0A0A0;
+            --card-bg: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            margin: 0;
+            padding: 20px 5%;
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--white);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .status-ready {
+            color: #50C878; /* Vert émeraude pour "Prêt" */
+            font-weight: 600;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            color: var(--gold);
+            margin: 10px 0;
+        }
+
+        .section-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        h2 {
+            font-size: 1rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+
+        /* --- Infos Médium --- */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+        .info-label { color: var(--gray); }
+        .type-badge {
+            background: var(--purple);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        /* --- Tableau Historique --- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th { text-align: left; color: var(--gold); font-size: 0.8rem; padding: 10px; border-bottom: 1px solid var(--gray); }
+        td { padding: 10px; font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+
+        /* --- Sliders Aide --- */
+        .help-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .slider-group {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .slider-label { width: 80px; font-size: 0.9rem; }
+        input[type=range] {
+            flex-grow: 1;
+            accent-color: var(--gold);
+        }
+        .scale-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            color: var(--gray);
+            margin-top: 5px;
+        }
+
+        /* --- Textareas --- */
+        textarea {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--gray);
+            border-radius: 5px;
+            color: white;
+            padding: 15px;
+            font-family: inherit;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+        textarea:focus { border-color: var(--gold); outline: none; }
+
+        /* --- Boutons --- */
+        .btn-predict {
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+        .btn-predict:hover { background: var(--gold); color: var(--bg-color); }
+
+        .btn-end {
+            display: block;
+            width: fit-content;
+            margin: 40px auto;
+            padding: 15px 40px;
+            background: var(--gold);
+            color: var(--bg-color);
+            border: none;
+            border-radius: 50px;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Ma Consultation</h1>
+    </header>
+
+    <button class="btn-end">Je me sens prêt.e</button>
+
+    <section class="section-card">
+        <h2>Médium : <span class="type-badge">Spirit</span></h2>
+        <div class="info-grid">
+            <span class="info-label">Dénomination :</span> <span>Gwenäelle</span>
+            <span class="info-label">Genre :</span> <span>F</span>
+            <span class="info-label">Support :</span> <span>Boule de cristal</span>
+            <span class="info-label">Promotion :</span> <span>-</span>
+        </div>
+    </section>
+
+    <section class="section-card">
+        <h2>Profil Astral de Alice PASCAL</h2>
+        <div class="info-grid">
+            <span class="info-label">Zodiaque :</span> <span>♎ Balance</span>
+            <span class="info-label">Chinois :</span> <span>🐉 Dragon</span>
+            <span class="info-label">Couleur :</span> <span>Émeraude</span>
+            <span class="info-label">Animal :</span> <span>Chouette</span>
+        </div>
+    </section>
+
+    <section class="section-card">
+        <h2>Historique des consultations</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Commentaire</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>12/04/2026</td>
+                    <td>Client très réceptif...</td>
+                </tr>
+                <tr>
+                    <td>01/02/2026</td>
+                    <td>...</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section-card">
+        <h2>Outils d'aide</h2>
+        <div class="help-section">
+            <div class="slider-group">
+                <span class="slider-label">Amour</span>
+                <div style="flex-grow: 1;">
+                    <input type="range" min="1" max="4" step="1">
+                    <div class="scale-labels"><span>1</span><span>2</span><span>3</span><span>4</span></div>
+                </div>
+            </div>
+            <div class="slider-group">
+                <span class="slider-label">Santé</span>
+                <div style="flex-grow: 1;">
+                    <input type="range" min="1" max="4" step="1">
+                    <div class="scale-labels"><span>1</span><span>2</span><span>3</span><span>4</span></div>
+                </div>
+            </div>
+            <div class="slider-group">
+                <span class="slider-label">Travail</span>
+                <div style="flex-grow: 1;">
+                    <input type="range" min="1" max="4" step="1">
+                    <div class="scale-labels"><span>1</span><span>2</span><span>3</span><span>4</span></div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="margin-top: 30px;">
+            <button class="btn-predict">Prédire</button>
+            <textarea rows="4" placeholder="Votre prédiction générée..."></textarea>
+        </div>
+    </section>
+
+    <section class="section-card">
+        <h2>Commentaire final de consultation</h2>
+        <textarea rows="4" placeholder="Saisissez vos notes ici..."></textarea>
+    </section>
+
+    <button class="btn-end">Fin de consultation</button>
+
+</body>
+</html>
