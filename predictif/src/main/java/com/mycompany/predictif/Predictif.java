@@ -7,6 +7,7 @@ package com.mycompany.predictif;
 import dao.JpaUtil;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import metier.modele.Client;
 import metier.modele.Consultation;
 import metier.modele.Employe;
@@ -107,6 +108,10 @@ public class Predictif {
         System.out.println(service.getTop5Client());
         System.out.println("\n-------------------------------------------------");
         
+        
+        System.out.println("get consults par employe");
+        System.out.println(service.getNbConsultationParEmploye());
+        System.out.println("\n-------------------------------------------------");
         /*String invite = "";
         Saisie.lireChaine(invite);*/
     }

@@ -128,16 +128,6 @@ public class Service {
         finally {
             JpaUtil.fermerContextePersistance();
         }
-        
-        if (clientInscrit) {
-            String corps = "Bonjour " + client.getPrenom() + ", nous ...";
-            Message.envoyerMail("contact@predictif.fr", client.getMail(), "Bienvenu chez PREDICT'IF", corps);
-        }
-        else {
-            String corps = "Bonjour " + client.getPrenom() + ", votre ...";
-            Message.envoyerMail("contact@predictif.fr", client.getMail(), "Bienvenu chez PREDICT'IF", corps);
-        }
-        
         return clientInscrit;
     }
     
@@ -629,6 +619,28 @@ public class Service {
         }
         
         return topClient;
+    }
+    
+    public Map<Employe, Integer> getNbConsultationParEmploye() {
+        List<Employe> listEmploye;
+        Map<Employe, Integer> repartition = new HashMap<>();
+
+        try {
+            JpaUtil.creerContextePersistance();
+            listEmploye = EmployeDao.findAll();
+
+            // On remplit la Map
+            for (Employe emp : listEmploye) {
+                // .size() donne le nombre de consultations dans la liste
+                repartition.put(emp, emp.getListeConsultations().size());
+            }
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+        } finally {
+            JpaUtil.fermerContextePersistance();
+        }
+
+        return repartition;
     }
 }
     
