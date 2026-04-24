@@ -31,6 +31,8 @@ public class Client {
     private String prenom;
     private LocalDate dateDeNaissance;
     private String adressePostal;
+    private Float adresseLongitude;
+    private Float adresseLatitude;
     private String numeroTelephone;
     private String motDePasse;
     @Embedded
@@ -92,6 +94,14 @@ public class Client {
     public void setProfil(ProfilAstral profil) {
         this.profil = profil;
     }
+    
+    public void setAdresseLongitude(Float AdresseLongitude) {
+        this.adresseLongitude = AdresseLongitude;
+    }
+
+    public void setAdresseLatitude(Float AdresseLatitude) {
+        this.adresseLatitude = AdresseLatitude;
+    }
 
     public ProfilAstral getProfil() {
         return profil;
@@ -139,7 +149,7 @@ public class Client {
 
     @Override
     public String toString() {
-        return "Client{" + "id=" + id + ", mail=" + mail + ", nom=" + nom + ", prenom=" + prenom + ", dateDeNaissance=" + dateDeNaissance + ", adressePostal=" + adressePostal + ", numeroTelephone=" + numeroTelephone + ", motDePasse=" + motDePasse + ", profil=" + profil + '}';
+        return "Client{" + "id=" + id + ", mail=" + mail + ", nom=" + nom + ", prenom=" + prenom + ", dateDeNaissance=" + dateDeNaissance + ", adressePostal=" + adressePostal + ", adresseLongitude=" + adresseLongitude+ ", adresseLatitude=" + adresseLatitude + ", numeroTelephone=" + numeroTelephone + ", motDePasse=" + motDePasse + ", profil=" + profil + '}';
     }
     
     public List<Consultation> getConsultationsByMedium(Medium m) {
