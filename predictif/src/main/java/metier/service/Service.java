@@ -128,6 +128,16 @@ public class Service {
         finally {
             JpaUtil.fermerContextePersistance();
         }
+        
+        if (clientInscrit) {
+            String corps = "Bonjour " + client.getPrenom() + ", nous ...";
+            Message.envoyerMail("contact@predictif.fr", client.getMail(), "Bienvenu chez PREDICT'IF", corps);
+        }
+        else {
+            String corps = "Bonjour " + client.getPrenom() + ", votre ...";
+            Message.envoyerMail("contact@predictif.fr", client.getMail(), "Bienvenu chez PREDICT'IF", corps);
+        }
+        
         return clientInscrit;
     }
     
