@@ -86,60 +86,10 @@ public class Service {
         return profil;
     }
     
-    private void mettreCoordonneeClient(Client client) {
-        // transformation de l'adresse en coordonnées géographiques
-        List<List<Float>> coordonnes = new ArrayList<>();
-        JsonObject result = null;
-        
-        JsonArray cordJson;
-        try {
-            // TODO: adapter l'URL de l'API et la liste des paramètres
-            URI requestUri = URI.create(
-                    "https://data.geopf.fr/geocodage/search"
-                    + "?autocomplete=" + URLEncoder.encode("0", StandardCharsets.UTF_8)
-                    + "&index=" + URLEncoder.encode("address", StandardCharsets.UTF_8)
-                    + "&limit=" + URLEncoder.encode("1", StandardCharsets.UTF_8)
-                    + "&returntruegeometry=" + URLEncoder.encode("false", StandardCharsets.UTF_8)
-                    + "&q=" + URLEncoder.encode(client.getAdressePostal(), StandardCharsets.UTF_8)
-            );
-
-            HttpClient httpClient = HttpClient.newHttpClient();
-            HttpRequest httpRequest = HttpRequest.newBuilder(requestUri).GET().build();
-            HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-
-            if (httpResponse.statusCode() == 200) {
-                String body = httpResponse.body();
-                //System.out.println(body);
-
-                result = Json.createReader(new StringReader(body)).readObject();
-
-                //System.out.println(result.toString());
-                //{"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[1.37987,43.579724]},"properties":{"label":"13 Rue Albert Einstein 31100 Toulouse","score":0.9761863636363635,"housenumber":"13","id":"31555_0110_00013","banId":"51cef5c0-41ff-491d-96d9-a08eac41e0ff","name":"13 Rue Albert Einstein","postcode":"31100","citycode":"31555","x":569106.47,"y":6276972.18,"city":"Toulouse","context":"31, Haute-Garonne, Occitanie","type":"housenumber","importance":0.73805,"depcode":"31","street":"Rue Albert Einstein","_type":"address"}}],"query":"13 rue Albert Einstein"}                    //String pred = result.getString("prediction-amour");
-                //{"type":"FeatureCollection","features":[],"query":"hvgv"}
-                if (!result.getJsonArray("features").isEmpty()) {
-                    cordJson = result.getJsonArray("features").getJsonObject(0).getJsonObject("geometry").getJsonArray("coordinates");
-                    client.setAdresseLongitude((float) cordJson.getJsonNumber(0).doubleValue());
-                    client.setAdresseLatitude((float) cordJson.getJsonNumber(1).doubleValue());
-
-                }
-
-            } else {
-                throw new IOException("HTTP Error Status Code " + httpResponse.statusCode());
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace(System.err);
-        }
-    }
-    
     public Boolean inscrireClient(Client client) {
-        System.out.println("metier.service.Service.inscrireClient()");
         Boolean clientInscrit = false; 
-        
-        
         try {
-            
-            mettreCoordonneeClient(client);
+            System.out.println("metier.service.Service.inscrireClient()");
             ProfilAstral profil = new ProfilAstral();
             profil = calculProfilAstral(client);
             
@@ -327,39 +277,41 @@ public class Service {
         return mediums;
     }
     
-    public Boolean demanderConsultation(Client client, Medium medium) {
+    public Boolean demanderConsultation(Long idClient, Long idMedium) {
         Boolean employeAffecte = false;
         try {
             System.out.println("metier.service.Service.demanderConsultation()");
-            
+
             JpaUtil.creerContextePersistance();
-            
+
+            // Récupération des objets via les ID
+            Client client = ClientDao.findById(idClient);
+            Medium medium = MediumDao.findById(idMedium);
+
             Consultation consultation = new Consultation(client, medium);
             Employe employeLibre = EmployeDao.findEmployeLibre(medium.getGenre());
             consultation.setEmploye(employeLibre);
-            
+
             employeLibre.setEstEnConsultation(Boolean.TRUE);
             employeLibre.appendListeConsultations(consultation);
-            
+
             client.appendListeConsultations(consultation);
-            
+
             JpaUtil.ouvrirTransaction();
-            
+
             ConsultationDao.create(consultation);
-            
+
             EmployeDao.update(employeLibre);
             ClientDao.update(client);
-            
+
             employeAffecte = true;
             System.out.println("l'employe affecte est : " + employeLibre);
             JpaUtil.validerTransaction();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             JpaUtil.annulerTransaction();
             e.printStackTrace(System.err);
             System.out.println("pas d'employe affecté");
-        }
-        finally {
+        } finally {
             JpaUtil.fermerContextePersistance();
         }
         return employeAffecte;
@@ -386,142 +338,172 @@ public class Service {
         JsonArray cordJson;
         
         for (String adr : adresses) {
-            
+            cord = new ArrayList<>();
+            try {
+                // TODO: adapter l'URL de l'API et la liste des paramètres
+                URI requestUri = URI.create(
+                        "https://data.geopf.fr/geocodage/search"
+                        + "?autocomplete=" + URLEncoder.encode("0", StandardCharsets.UTF_8)
+                        + "&index=" + URLEncoder.encode("address", StandardCharsets.UTF_8)
+                        + "&limit=" + URLEncoder.encode("1", StandardCharsets.UTF_8)
+                        + "&returntruegeometry=" + URLEncoder.encode("false", StandardCharsets.UTF_8)
+                        + "&q=" + URLEncoder.encode(adr, StandardCharsets.UTF_8)
+                );
+
+                HttpClient httpClient = HttpClient.newHttpClient();
+                HttpRequest httpRequest = HttpRequest.newBuilder(requestUri).GET().build();
+                HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+
+                if (httpResponse.statusCode() == 200) {
+                    String body = httpResponse.body();
+                    //System.out.println(body);
+
+                    result = Json.createReader(new StringReader(body)).readObject();
+
+                    //System.out.println(result.toString());
+                    //{"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[1.37987,43.579724]},"properties":{"label":"13 Rue Albert Einstein 31100 Toulouse","score":0.9761863636363635,"housenumber":"13","id":"31555_0110_00013","banId":"51cef5c0-41ff-491d-96d9-a08eac41e0ff","name":"13 Rue Albert Einstein","postcode":"31100","citycode":"31555","x":569106.47,"y":6276972.18,"city":"Toulouse","context":"31, Haute-Garonne, Occitanie","type":"housenumber","importance":0.73805,"depcode":"31","street":"Rue Albert Einstein","_type":"address"}}],"query":"13 rue Albert Einstein"}                    //String pred = result.getString("prediction-amour");
+                    //{"type":"FeatureCollection","features":[],"query":"hvgv"}
+                    if (!result.getJsonArray("features").isEmpty()) {
+                        cordJson = result.getJsonArray("features").getJsonObject(0).getJsonObject("geometry").getJsonArray("coordinates");
+                        cord.add((float) cordJson.getJsonNumber(0).doubleValue());
+                        cord.add((float) cordJson.getJsonNumber(1).doubleValue());
+
+                        coordonnes.add(cord);
+                    }
+
+                } else {
+                    throw new IOException("HTTP Error Status Code " + httpResponse.statusCode());
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace(System.err);
+            }
         }
         
         
         return coordonnes;
     }
     
-    public Boolean seMettrePret(Employe employe) {
+    public Boolean seMettrePret(Long idEmploye) {
         System.out.println("metier.service.Service.seMettrePret()");
         Boolean aPuSeMettrePret = false;
         LocalTime deb_heure = LocalTime.now();
-        
-        // le if ne devrai pas être necessaire mais au cas ou...
-        if (employe.getEstEnConsultation()) {
-            // mettre a jour l'heure de début de la consultation
-            // la derniere consultation de l'employe est celle qu'il traite actuellement
-            Consultation consultation = employe.getListeConsultations().get(employe.getListeConsultations().size() - 1);
-            consultation.setHeureDebut(deb_heure);
 
+        try {
+            JpaUtil.creerContextePersistance();
+            Employe employe = EmployeDao.findById(idEmploye);
 
-            try {
-                JpaUtil.creerContextePersistance();
-                // mettre a jours consultation dans la base de données
+            if (employe.getEstEnConsultation()) {
+                Consultation consultation = employe.getListeConsultations().get(employe.getListeConsultations().size() - 1);
+                consultation.setHeureDebut(deb_heure);
+
+                String telEmploye = employe.getNumeroTelephone();
+                String telClient = consultation.getClient().getNumeroTelephone();
+                Message.envoyerNotification(telClient, telEmploye);
+
                 JpaUtil.ouvrirTransaction();
                 ConsultationDao.update(consultation);
                 JpaUtil.validerTransaction();
-                // envoyer message au client avec le tel de l'employe
-                String telEmploye = employe.getNumeroTelephone();
-                String telClient = consultation.getClient().getNumeroTelephone();
-                Message.envoyerNotification(telClient,telEmploye);
                 aPuSeMettrePret = true;
-            } catch (Exception e) {
-                JpaUtil.annulerTransaction();
-                e.printStackTrace(System.err);
-            } finally {
-                JpaUtil.creerContextePersistance();
-            
+            } else {
+                System.out.println("L'employe que vous essayez de mettre pret n'est pas en consultation");
             }
+        } catch (Exception e) {
+            JpaUtil.annulerTransaction();
+            e.printStackTrace(System.err);
+        } finally {
+            JpaUtil.fermerContextePersistance();
         }
-        else {
-            System.out.println("L'employe que vous essayez de mettre pret n'est pas en consultation");
-        }
-        
+
         return aPuSeMettrePret;
     }
     
-    public String getPredictionEnCasPanneInspiration(Client client, int amour, int sante, int travail) {
-        JsonObject result = null;
-        String prediction = "";
+    public String getPredictionEnCasPanneInspiration(Long idClient, int amour, int sante, int travail) {
+    JsonObject result = null;
+    String prediction = "";
+    
+    try {
+        JpaUtil.creerContextePersistance();
+        Client client = ClientDao.findById(idClient);
+        
         String couleur = client.getProfil().getCouleur();
         String animal = client.getProfil().getAnimal();
         
-        try {
-            // TODO: adapter l'URL de l'API et la liste des paramètres
-            URI requestUri = URI.create(
-                    "https://servif.insa-lyon.fr/WebDataGenerator/Astro"
-                    + "?service=" + URLEncoder.encode("predictions", StandardCharsets.UTF_8)
-                    + "&key=" + URLEncoder.encode("ASTRO-01-M0lGLURBU0ktQVNUUk8tQjAx", StandardCharsets.UTF_8)
-                    + "&couleur=" + URLEncoder.encode(couleur, StandardCharsets.UTF_8)
-                    + "&animal=" + URLEncoder.encode(animal, StandardCharsets.UTF_8)
-                    + "&niveau-amour=" + URLEncoder.encode(Integer.toString(amour), StandardCharsets.UTF_8)
-                    + "&niveau-sante=" + URLEncoder.encode(Integer.toString(sante), StandardCharsets.UTF_8)
-                    + "&niveau-travail=" + URLEncoder.encode(Integer.toString(travail), StandardCharsets.UTF_8)
-            );
+        URI requestUri = URI.create(
+                "https://servif.insa-lyon.fr/WebDataGenerator/Astro"
+                + "?service=" + URLEncoder.encode("predictions", StandardCharsets.UTF_8)
+                + "&key=" + URLEncoder.encode("ASTRO-01-M0lGLURBU0ktQVNUUk8tQjAx", StandardCharsets.UTF_8)
+                + "&couleur=" + URLEncoder.encode(couleur, StandardCharsets.UTF_8)
+                + "&animal=" + URLEncoder.encode(animal, StandardCharsets.UTF_8)
+                + "&niveau-amour=" + URLEncoder.encode(Integer.toString(amour), StandardCharsets.UTF_8)
+                + "&niveau-sante=" + URLEncoder.encode(Integer.toString(sante), StandardCharsets.UTF_8)
+                + "&niveau-travail=" + URLEncoder.encode(Integer.toString(travail), StandardCharsets.UTF_8)
+        );
 
-            HttpClient httpClient = HttpClient.newHttpClient();
-            HttpRequest httpRequest = HttpRequest.newBuilder(requestUri).GET().build();
-            HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+        HttpClient httpClient = HttpClient.newHttpClient();
+        HttpRequest httpRequest = HttpRequest.newBuilder(requestUri).GET().build();
+        HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
-            if (httpResponse.statusCode() == 200) {
-                String body = httpResponse.body();
-                //System.out.println(body);
-
-                result = Json.createReader(new StringReader(body)).readObject();
-                
-                //System.out.println(result.toString());
-                //{"profil-valide":true,"prediction-amour":"Votre charme n'est pas au mieux ! Oubliez vos ambitions amoureuses pour quelques temps, et concentrez-vous sur votre bien-être. Faites confiance à Mars pour la suite. Signe antagoniste: Capricorne.","prediction-sante":"Une journée ordinaire, mais attention aux courants d'air ! Restez vigilant tout au long de la journée, car la fatigue vous guette... Essayez de manger dans un endroit calme. Conseil: Allez voir préventivement le médecin.","prediction-travail":"Très collaboratif aujourd'hui, vous ferez preuve d'une énergie impressionnante. Rien ne vous arrêtera pour dépasser vos objectifs. Signe collaborateur: Bœuf."}                String pred = result.getString("prediction-amour");
-                String pred = result.getString("prediction-amour");
-                prediction += "Prediction amour : \n" + pred + "\n";
-                pred = result.getString("prediction-sante");
-                prediction += "Prediction sante : \n" + pred + "\n";
-                pred = result.getString("prediction-travail");
-                prediction += "Prediction travail : \n" + pred + "\n";
-                
-            } else {
-                throw new IOException("HTTP Error Status Code " + httpResponse.statusCode());
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace(System.err);
-            prediction = null;
+        if (httpResponse.statusCode() == 200) {
+            String body = httpResponse.body();
+            result = Json.createReader(new StringReader(body)).readObject();
+            
+            String pred = result.getString("prediction-amour");
+            prediction += "Prediction amour : \n" + pred + "\n";
+            pred = result.getString("prediction-sante");
+            prediction += "Prediction sante : \n" + pred + "\n";
+            pred = result.getString("prediction-travail");
+            prediction += "Prediction travail : \n" + pred + "\n";
+            
+        } else {
+            throw new IOException("HTTP Error Status Code " + httpResponse.statusCode());
         }
-        
-        return prediction;
+
+    } catch (Exception e) {
+        e.printStackTrace(System.err);
+        prediction = null;
+    } finally {
+        JpaUtil.fermerContextePersistance();
     }
     
-    public Boolean finirConsultation(Employe employe, String commentaire) {
+    return prediction;
+}
+    
+    public Boolean finirConsultation(Long idEmploye, String commentaire) {
         System.out.println("metier.service.Service.finirConsultation()");
         Boolean aPuFinirConsultation = false;
         LocalTime fin_heure = LocalTime.now();
-        
-        // le if ne devrai pas être necessaire mais au cas ou...
-        if (employe.getEstEnConsultation()) {
-            // mettre a jour l'heure de début de la consultation
-            // la derniere consultation de l'employe est celle qu'il traite actuellement
-            Consultation consultation = employe.getListeConsultations().get(employe.getListeConsultations().size() - 1);
-            consultation.setHeureFin(fin_heure);
-            consultation.setCommentaire(commentaire);
-            
-            // mettre l'employe disponible
-            employe.setEstEnConsultation(false);
 
-            try {
-                JpaUtil.creerContextePersistance();
-                // mettre a jours consultation dans la base de données
+        try {
+            JpaUtil.creerContextePersistance();
+            Employe employe = EmployeDao.findById(idEmploye);
+
+            if (employe.getEstEnConsultation()) {
+                Consultation consultation = employe.getListeConsultations().get(employe.getListeConsultations().size() - 1);
+                consultation.setHeureFin(fin_heure);
+                consultation.setCommentaire(commentaire);
+
+                employe.setEstEnConsultation(false);
+
                 JpaUtil.ouvrirTransaction();
-                
                 ConsultationDao.update(consultation);
                 EmployeDao.update(employe);
-                
                 JpaUtil.validerTransaction();
+
                 aPuFinirConsultation = true;
-            } catch (Exception e) {
-                JpaUtil.annulerTransaction();
-                e.printStackTrace(System.err);
-            } finally {
-                JpaUtil.creerContextePersistance();
+            } else {
+                System.out.println("L'employe que vous essayez de mettre pret n'est pas en consultation");
             }
+        } catch (Exception e) {
+            JpaUtil.annulerTransaction();
+            e.printStackTrace(System.err);
+        } finally {
+            JpaUtil.fermerContextePersistance();
         }
-        else {
-            System.out.println("L'employe que vous essayez de mettre pret n'est pas en consultation");
-        }
-        
+
         return aPuFinirConsultation;
     }
-    
+
     public List<Medium> getTop5Medium() {
         List<Medium> topMedium = new ArrayList<>();
         

@@ -7,7 +7,6 @@ package dao;
 import java.util.List;
 import javax.persistence.TypedQuery;
 import metier.modele.Consultation;
-import metier.modele.Employe;
 
 /**
  *
@@ -42,14 +41,5 @@ public class ConsultationDao {
         
         List<Consultation> employes = query.getResultList();
         return employes;
-    }
-    
-    public static Consultation findConsultationActuelleEmploye(Employe employe) {
-        String req = "select c from Consultation c where c.employe = :unEmploye";
-        TypedQuery<Consultation> query = JpaUtil.obtenirContextePersistance().createQuery(req, Consultation.class);
-        query.setParameter("unEmploye", employe);
-        
-        Consultation consultation = query.getSingleResult();
-        return consultation;
     }
 }

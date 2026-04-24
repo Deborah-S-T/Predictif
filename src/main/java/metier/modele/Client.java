@@ -31,8 +31,6 @@ public class Client {
     private String prenom;
     private LocalDate dateDeNaissance;
     private String adressePostal;
-    private Float AdresseLongitude;
-    private Float AdresseLatitude;
     private String numeroTelephone;
     private String motDePasse;
     @Embedded
@@ -93,14 +91,6 @@ public class Client {
 
     public void setProfil(ProfilAstral profil) {
         this.profil = profil;
-    }
-
-    public void setAdresseLongitude(Float AdresseLongitude) {
-        this.AdresseLongitude = AdresseLongitude;
-    }
-
-    public void setAdresseLatitude(Float AdresseLatitude) {
-        this.AdresseLatitude = AdresseLatitude;
     }
 
     public ProfilAstral getProfil() {

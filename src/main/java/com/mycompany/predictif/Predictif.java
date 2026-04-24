@@ -65,9 +65,9 @@ public class Predictif {
         long id_medium = 2;
         Medium medium = service.getMediumById(id_medium);
         System.out.println(medium);
-        service.demanderConsultation(c12, medium);
+        service.demanderConsultation(c12.getId(), medium.getId());
         
-        service.demanderConsultation(c22, medium);
+        service.demanderConsultation(c22.getId(), medium.getId());
         System.out.println("\n-------------------------------------------------");
         
         
@@ -79,16 +79,16 @@ public class Predictif {
         // l'employe en consultation pour les deux prochains services
         Employe employe = service.authentifierEmploye("paul.retourne@insa-lyon.fr", "mdppaul");
         System.out.println("se mettre pret\n-------------------------------------------------");
-        service.seMettrePret(employe);
+        service.seMettrePret(employe.getId());
         System.out.println("\n-------------------------------------------------");
         
         System.out.println("finir la consultation\n-------------------------------------------------");
         String commentaire = "J'ai prédit ça... elle a réagit comme ça...";
-        service.finirConsultation(employe, commentaire);
+        service.finirConsultation(employe.getId(), commentaire);
         System.out.println("\n-------------------------------------------------");
         
         System.out.println("get une prediction\n-------------------------------------------------");
-        String pred = service.getPredictionEnCasPanneInspiration(c22, 1, 2, 4);
+        String pred = service.getPredictionEnCasPanneInspiration(c22.getId(), 1, 2, 4);
         System.out.println(pred);
         System.out.println("\n-------------------------------------------------");
         
@@ -96,7 +96,7 @@ public class Predictif {
         long id_medium2 = 6;
         Medium medium2 = service.getMediumById(id_medium2);
         System.out.println(medium2);
-        service.demanderConsultation(c22, medium2);
+        service.demanderConsultation(c22.getId(), medium2.getId());
         System.out.println(service.getTop5Medium());
         System.out.println("\n-------------------------------------------------");
         
