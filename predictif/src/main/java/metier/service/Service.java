@@ -86,10 +86,60 @@ public class Service {
         return profil;
     }
     
-    public Boolean inscrireClient(Client client) {
-        Boolean clientInscrit = false; 
+    private void mettreCoordonneeClient(Client client) {
+        // transformation de l'adresse en coordonnées géographiques
+        List<List<Float>> coordonnes = new ArrayList<>();
+        JsonObject result = null;
+        
+        JsonArray cordJson;
         try {
-            System.out.println("metier.service.Service.inscrireClient()");
+            // TODO: adapter l'URL de l'API et la liste des paramètres
+            URI requestUri = URI.create(
+                    "https://data.geopf.fr/geocodage/search"
+                    + "?autocomplete=" + URLEncoder.encode("0", StandardCharsets.UTF_8)
+                    + "&index=" + URLEncoder.encode("address", StandardCharsets.UTF_8)
+                    + "&limit=" + URLEncoder.encode("1", StandardCharsets.UTF_8)
+                    + "&returntruegeometry=" + URLEncoder.encode("false", StandardCharsets.UTF_8)
+                    + "&q=" + URLEncoder.encode(client.getAdressePostal(), StandardCharsets.UTF_8)
+            );
+
+            HttpClient httpClient = HttpClient.newHttpClient();
+            HttpRequest httpRequest = HttpRequest.newBuilder(requestUri).GET().build();
+            HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+
+            if (httpResponse.statusCode() == 200) {
+                String body = httpResponse.body();
+                //System.out.println(body);
+
+                result = Json.createReader(new StringReader(body)).readObject();
+
+                //System.out.println(result.toString());
+                //{"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[1.37987,43.579724]},"properties":{"label":"13 Rue Albert Einstein 31100 Toulouse","score":0.9761863636363635,"housenumber":"13","id":"31555_0110_00013","banId":"51cef5c0-41ff-491d-96d9-a08eac41e0ff","name":"13 Rue Albert Einstein","postcode":"31100","citycode":"31555","x":569106.47,"y":6276972.18,"city":"Toulouse","context":"31, Haute-Garonne, Occitanie","type":"housenumber","importance":0.73805,"depcode":"31","street":"Rue Albert Einstein","_type":"address"}}],"query":"13 rue Albert Einstein"}                    //String pred = result.getString("prediction-amour");
+                //{"type":"FeatureCollection","features":[],"query":"hvgv"}
+                if (!result.getJsonArray("features").isEmpty()) {
+                    cordJson = result.getJsonArray("features").getJsonObject(0).getJsonObject("geometry").getJsonArray("coordinates");
+                    client.setAdresseLongitude((float) cordJson.getJsonNumber(0).doubleValue());
+                    client.setAdresseLatitude((float) cordJson.getJsonNumber(1).doubleValue());
+
+                }
+
+            } else {
+                throw new IOException("HTTP Error Status Code " + httpResponse.statusCode());
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+        }
+    }
+    
+    public Boolean inscrireClient(Client client) {
+        System.out.println("metier.service.Service.inscrireClient()");
+        Boolean clientInscrit = false; 
+        
+        
+        try {
+            
+            mettreCoordonneeClient(client);
             ProfilAstral profil = new ProfilAstral();
             profil = calculProfilAstral(client);
             
@@ -336,46 +386,7 @@ public class Service {
         JsonArray cordJson;
         
         for (String adr : adresses) {
-            cord = new ArrayList<>();
-            try {
-                // TODO: adapter l'URL de l'API et la liste des paramètres
-                URI requestUri = URI.create(
-                        "https://data.geopf.fr/geocodage/search"
-                        + "?autocomplete=" + URLEncoder.encode("0", StandardCharsets.UTF_8)
-                        + "&index=" + URLEncoder.encode("address", StandardCharsets.UTF_8)
-                        + "&limit=" + URLEncoder.encode("1", StandardCharsets.UTF_8)
-                        + "&returntruegeometry=" + URLEncoder.encode("false", StandardCharsets.UTF_8)
-                        + "&q=" + URLEncoder.encode(adr, StandardCharsets.UTF_8)
-                );
-
-                HttpClient httpClient = HttpClient.newHttpClient();
-                HttpRequest httpRequest = HttpRequest.newBuilder(requestUri).GET().build();
-                HttpResponse<String> httpResponse = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-
-                if (httpResponse.statusCode() == 200) {
-                    String body = httpResponse.body();
-                    //System.out.println(body);
-
-                    result = Json.createReader(new StringReader(body)).readObject();
-
-                    //System.out.println(result.toString());
-                    //{"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[1.37987,43.579724]},"properties":{"label":"13 Rue Albert Einstein 31100 Toulouse","score":0.9761863636363635,"housenumber":"13","id":"31555_0110_00013","banId":"51cef5c0-41ff-491d-96d9-a08eac41e0ff","name":"13 Rue Albert Einstein","postcode":"31100","citycode":"31555","x":569106.47,"y":6276972.18,"city":"Toulouse","context":"31, Haute-Garonne, Occitanie","type":"housenumber","importance":0.73805,"depcode":"31","street":"Rue Albert Einstein","_type":"address"}}],"query":"13 rue Albert Einstein"}                    //String pred = result.getString("prediction-amour");
-                    //{"type":"FeatureCollection","features":[],"query":"hvgv"}
-                    if (!result.getJsonArray("features").isEmpty()) {
-                        cordJson = result.getJsonArray("features").getJsonObject(0).getJsonObject("geometry").getJsonArray("coordinates");
-                        cord.add((float) cordJson.getJsonNumber(0).doubleValue());
-                        cord.add((float) cordJson.getJsonNumber(1).doubleValue());
-
-                        coordonnes.add(cord);
-                    }
-
-                } else {
-                    throw new IOException("HTTP Error Status Code " + httpResponse.statusCode());
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace(System.err);
-            }
+            
         }
         
         
@@ -394,10 +405,6 @@ public class Service {
             Consultation consultation = employe.getListeConsultations().get(employe.getListeConsultations().size() - 1);
             consultation.setHeureDebut(deb_heure);
 
-            // envoyer message au client avec le tel de l'employe
-            String telEmploye = employe.getNumeroTelephone();
-            String telClient = consultation.getClient().getNumeroTelephone();
-            Message.envoyerNotification(telClient,telEmploye);
 
             try {
                 JpaUtil.creerContextePersistance();
@@ -405,12 +412,17 @@ public class Service {
                 JpaUtil.ouvrirTransaction();
                 ConsultationDao.update(consultation);
                 JpaUtil.validerTransaction();
+                // envoyer message au client avec le tel de l'employe
+                String telEmploye = employe.getNumeroTelephone();
+                String telClient = consultation.getClient().getNumeroTelephone();
+                Message.envoyerNotification(telClient,telEmploye);
                 aPuSeMettrePret = true;
             } catch (Exception e) {
                 JpaUtil.annulerTransaction();
                 e.printStackTrace(System.err);
             } finally {
                 JpaUtil.creerContextePersistance();
+            
             }
         }
         else {
