@@ -327,6 +327,26 @@ public class Service {
         return mediums;
     }
     
+    public Consultation getConsultationActuelle(Long idEmploye) {
+        Employe employe = null;
+        Consultation consultation = null;
+        try {
+            JpaUtil.creerContextePersistance();
+            // Récupération des objets via les ID
+            employe = EmployeDao.findById(idEmploye);
+        } catch (Exception e) {
+        } finally {
+            JpaUtil.fermerContextePersistance();
+        }
+        
+        for (Consultation c : employe.getListeConsultations()) {
+            if (c.getHeureFin() == null){
+                consultation = c;
+            }
+        }
+        return consultation;
+    }
+    
     public Boolean demanderConsultation(Long idClient, Long idMedium) {
         Boolean employeAffecte = false;
         try {
@@ -365,6 +385,29 @@ public class Service {
             JpaUtil.fermerContextePersistance();
         }
         return employeAffecte;
+    }
+    
+    public List<Consultation> getConsultationsClientMedium(Long idClient, Long idMedium) {
+        System.out.println("metier.service.Service.demanderConsultation()");
+        List<Consultation> consultationsMedium = new ArrayList<>();
+        Client client = null;
+        Medium medium = null;
+        try {
+            JpaUtil.creerContextePersistance();
+            // Récupération des objets via les ID
+            client = ClientDao.findById(idClient);
+            medium = MediumDao.findById(idMedium);
+        } catch (Exception e) {
+        } finally {
+            JpaUtil.fermerContextePersistance();
+        }
+        
+        for (Consultation c : client.getListeConsultations()) {
+            if (c.getMedium().equals(medium)) {
+                consultationsMedium.add(c);
+            }
+        }
+        return consultationsMedium;
     }
     
     public List<Client> getTousClients() {
@@ -468,7 +511,7 @@ public class Service {
     return prediction;
 }
     
-    public Boolean finirConsultation(Long idEmploye, String commentaire) {
+    public Boolean finirConsultation(Long idEmploye, Consultation consultation, String commentaire) {
         System.out.println("metier.service.Service.finirConsultation()");
         Boolean aPuFinirConsultation = false;
         LocalTime fin_heure = LocalTime.now();
@@ -478,7 +521,6 @@ public class Service {
             Employe employe = EmployeDao.findById(idEmploye);
 
             if (employe.getEstEnConsultation()) {
-                Consultation consultation = employe.getListeConsultations().get(employe.getListeConsultations().size() - 1);
                 consultation.setHeureFin(fin_heure);
                 consultation.setCommentaire(commentaire);
 

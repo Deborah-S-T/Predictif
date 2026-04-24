@@ -84,7 +84,8 @@ public class Predictif {
         
         System.out.println("finir la consultation\n-------------------------------------------------");
         String commentaire = "J'ai prédit ça... elle a réagit comme ça...";
-        service.finirConsultation(employe.getId(), commentaire);
+        Consultation consultation = service.getConsultationActuelle(employe.getId());
+        service.finirConsultation(employe.getId(), consultation, commentaire);
         System.out.println("\n-------------------------------------------------");
         
         System.out.println("get une prediction\n-------------------------------------------------");
@@ -111,6 +112,10 @@ public class Predictif {
         
         System.out.println("get consults par employe");
         System.out.println(service.getNbConsultationParEmploye());
+        System.out.println("\n-------------------------------------------------");
+        
+        System.out.println("get consults d'un client pour un medium donnée");
+        System.out.println(service.getConsultationsClientMedium(c22.getId(), id_medium));
         System.out.println("\n-------------------------------------------------");
         /*String invite = "";
         Saisie.lireChaine(invite);*/
