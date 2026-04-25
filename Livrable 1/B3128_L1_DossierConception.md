@@ -75,7 +75,7 @@ par employé.
 
 ### 3.1 Schéma des cas d’utilisation
 
-![Schéma des cas d’utilisation](sch%C3%A9ma_cas_utilisation.png)
+<img src="sch%C3%A9ma_cas_utilisation.png" alt="Schéma des cas d’utilisation" width="300">
 
 ### 3.2 Synthèse
 
@@ -93,7 +93,7 @@ Les cas d’utilisation identifiés couvrent notamment :
 
 ### 4.1 Modèle du domaine
 
-![Modèle du domaine](modele_du_domaine.png)
+<img src="modele_du_domaine.png" alt="Modèle du domaine" width="500">
 
 ### 4.2 Lecture du modèle
 
