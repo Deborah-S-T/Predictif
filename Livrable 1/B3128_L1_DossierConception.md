@@ -272,7 +272,7 @@ une sous-section dédiée à la fenêtre.
 | -------------- | --------------------- | ---------- | ------- |
 | **INITIALISATION** |                   |            | Affichage de la fenêtre Connexion en mode saisie : champs **Mail** et **Mot de passe** vides et modifiables, bouton **Se connecter** activé. |
 | Aller à l'inscription | Lien : S'inscrire | Clic       | Fermeture de la fenêtre Connexion → ouverture de la fenêtre Inscription. |
-| Se connecter   | Bouton : Se connecter | Clic       | Si les champs sont renseignés alors <br> → Service `authentifierClient(mail, password)` / `authentifierEmploye(mail, password)` <br> → Si authentification OK alors : ouverture de l'accueil correspondant au profil (Client ou Employé) et mise en place de la session <br> → Sinon : affichage d'un message d'erreur (« identifiants invalides »). |
+| Se connecter   | Bouton : Se connecter | Clic       | Si les champs sont renseignés alors <br> → Service `authentifierClient(mail, password)` / `authentifierEmploye(mail, password)` <br> → Si authentification OK alors : mise en place de la session et redirection vers l'écran d'entrée correspondant au profil <br> • **Client** : ouverture de la page **Liste des médiums** (catalogue / réservation) <br> • **Employé** : ouverture du **Dashboard** (statistiques) <br> → Sinon : affichage d'un message d'erreur (« identifiants invalides »). |
 
 ---
 
@@ -282,7 +282,7 @@ une sous-section dédiée à la fenêtre.
 | -------------------- | ------------------------- | ---------- | ------- |
 | **INITIALISATION**   |                           |            | Affichage de la fenêtre Inscription en **mode création** : champs vides et modifiables. Bouton **Créer mon compte** activé. |
 | Aller à la connexion | Lien : Connectez-vous     | Clic       | Fermeture de la fenêtre Inscription → ouverture de la fenêtre Connexion. |
-| Créer le compte      | Bouton : Créer mon compte | Clic       | Si tous les champs obligatoires sont renseignés et `MotDePasse == ConfirmationMotDePasse` alors <br> → Service `inscrireClient(...)` <br> → Si Inscrire OK alors : passage en **mode consultation** (ou redirection Connexion) <br> → Sinon : gestion d'erreur. |
+| Créer le compte      | Bouton : Créer mon compte | Clic       | Si tous les champs obligatoires sont renseignés et `MotDePasse == ConfirmationMotDePasse` alors <br> → Service `inscrireClient(...)` <br> → Si Inscrire OK alors : redirection Connexion <br> → Sinon : gestion d'erreur. |
 
 #### Modes de la fenêtre Inscription
 
@@ -299,7 +299,7 @@ une sous-section dédiée à la fenêtre.
 | ---------------------- | ---------------------- | ---------- | ------- |
 | **INITIALISATION**     |                        |            | → Service `getAllMedium()` <br> Affichage de la liste des médiums repliée par défaut. |
 | Voir le détail médium  | Bandeau médium         | Clic       | Dépliage / repliage de la fiche du médium ciblé. |
-| Réserver une consultation | Bouton : Réserver  | Clic       | Si Client connecté alors <br> → Service `demanderConsultation(idClient, idMedium)` <br> → Si OK : confirmation et bascule vers le suivi de consultation <br> → Sinon : gestion d'erreur. |
+| Réserver une consultation | Bouton : Réserver  | Clic       | Si Client connecté alors <br> → Service `demanderConsultation(idClient, idMedium)` <br> → Si OK : confirmation et bascule vers l'historique des consultations du **client connecté** (avec un filtre médium pré-sélectionné sur le médium demandé) <br> → Sinon : gestion d'erreur. |
 
 ---
 
@@ -320,13 +320,28 @@ une sous-section dédiée à la fenêtre.
 | Générer une prédiction   | Bouton : Prédire                | Clic       | → Service `getPredictionEnCasPanneInspiration(idClient, amour, sante, travail)` <br> Affichage du texte généré. |
 | Terminer la consultation | Bouton : Fin de consultation    | Clic       | → Service `finirConsultation(idEmploye, consultation, commentaire)` <br> Si OK : passage en **mode clôturé**. |
 
+#### Modes de la fenêtre Ma consultation
+
+##### Mode préparation
+
+- Consultation attribuée à l’employé mais pas encore démarrée côté client.
+- Action principale disponible : **Je me sens prêt.e** (déclenche la notification au client).
+
+##### Mode consultation active
+
+- Consultation en cours ; l’employé peut utiliser les **outils d’aide** (niveaux amour/santé/travail + bouton **Prédire**) et préparer le commentaire final.
+
+##### Mode clôturé
+
+- Consultation terminée ; l’écran reste en lecture seule avec récapitulatif (commentaire saisi) et absence d’actions de pilotage.
+
 ---
 
 ### 2.6. Fenêtre Historique des consultations d'un client
 
 | Intention             | Contrôle                  | Action/Evt | Réponse |
 | --------------------- | ------------------------- | ---------- | ------- |
-| **INITIALISATION**    |                           |            | → Service `getConsultationsClientMedium(idClient, idMedium)` <br> Affichage de la liste des consultations et filtres vides. |
+| **INITIALISATION**    |                           |            | Récupération du client cible (client connecté, ou client concerné depuis une consultation côté employé), puis affichage de sa **liste de consultations**. <br> Les filtres (date / médium) s’appliquent côté IHM. <br> **Règle d’accès :** les commentaires des consultations sont visibles uniquement par un employé. |
 | Filtrer par date      | Champ : Date              | Sélection  | Mise à jour de la liste selon la date sélectionnée. |
 | Filtrer par médium    | Liste : Médium            | Sélection  | Mise à jour de la liste selon le médium sélectionné. |
 | Afficher un commentaire | Bandeau d'une consultation | Clic     | Si commentaire : dépliage du bloc commentaire. Sinon : aucune action. |
@@ -337,8 +352,7 @@ une sous-section dédiée à la fenêtre.
 
 | Intention          | Contrôle                | Action/Evt | Réponse |
 | ------------------ | ----------------------- | ---------- | ------- |
-| **INITIALISATION** |                         |            | → Service `getAllClients()` / `getTousClients()` *(noms à harmoniser)* <br> Affichage de la carte et positionnement selon les coordonnées des clients. |
-| Voir le détail d'une ville | Point client (ville) | Survol    | Affichage d'une info-bulle « Ville : N clients ». |
+| **INITIALISATION** |                         |            | → Service `getAllClients()` <br> Affichage de la carte et positionnement selon les coordonnées des clients. |
 
 ---
 
