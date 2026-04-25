@@ -80,7 +80,8 @@ public class Predictif {
         // l'employe en consultation pour les deux prochains services
         Employe employe = service.authentifierEmploye("paul.retourne@insa-lyon.fr", "mdppaul");
         System.out.println("se mettre pret\n-------------------------------------------------");
-        service.seMettrePret(employe.getId());
+        Consultation consultation_act = service.getConsultationActuelle(employe.getId());
+        service.seMettrePret(employe.getId(), consultation_act);
         System.out.println("\n-------------------------------------------------");
         
         System.out.println("finir la consultation\n-------------------------------------------------");

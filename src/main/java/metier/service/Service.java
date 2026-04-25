@@ -428,7 +428,7 @@ public class Service {
         return clients;
     }
     
-    public Boolean seMettrePret(Long idEmploye) {
+    public Boolean seMettrePret(Long idEmploye, Consultation consultation) {
         System.out.println("metier.service.Service.seMettrePret()");
         Boolean aPuSeMettrePret = false;
         LocalTime deb_heure = LocalTime.now();
@@ -438,7 +438,6 @@ public class Service {
             Employe employe = EmployeDao.findById(idEmploye);
 
             if (employe.getEstEnConsultation()) {
-                Consultation consultation = employe.getListeConsultations().get(employe.getListeConsultations().size() - 1);
                 consultation.setHeureDebut(deb_heure);
 
                 String telEmploye = employe.getNumeroTelephone();
@@ -631,15 +630,6 @@ public class Service {
         } finally {
             JpaUtil.fermerContextePersistance();
         }
-        
-        // hashmap avec medium : nbConslt
-        // pour pouvoir trier les client
-//        Map<Client, Integer> nbConsultationParClient = new HashMap<>();
-//        for (Client c : listClients) {
-//            nbConsultationParClient.put(c, c.getListeConsultations().size());
-//        }
-//        List<Map.Entry<Client, Integer>> sortedClientConsultationNb = new ArrayList<>(nbConsultationParClient.entrySet());
-//        sortedClientConsultationNb.sort(Map.Entry.comparingByValue());
         
         Client temp; 
         for (int i = 0; i<listClients.size()-1; i++) {
