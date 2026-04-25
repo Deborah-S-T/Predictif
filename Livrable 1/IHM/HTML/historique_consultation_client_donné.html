@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predict'IF - Historique Client</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #1A1B2F;
+            --gold: #D4AF37;
+            --purple: #4B0082;
+            --white: #F5F5F5;
+            --gray: #A0A0A0;
+            --card-bg: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            margin: 0;
+            padding: 40px 5%;
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--white);
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            color: var(--gold);
+            text-align: center;
+            margin-bottom: 40px;
+            letter-spacing: 2px;
+        }
+
+        /* --- Zone de Filtres --- */
+        .filter-bar {
+            background: rgba(75, 0, 130, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-group label {
+            font-size: 0.9rem;
+            color: var(--gold);
+        }
+
+        input, select {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--gray);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* --- Liste des Consultations --- */
+        .history-container {
+            max-width: 900px;
+            margin: 0 auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .consultation-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            background: var(--card-bg);
+            transition: background 0.3s;
+        }
+
+        .consultation-header {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+
+        .consultation-header:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .main-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            background: var(--purple);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            border: 1px solid var(--gold);
+        }
+
+        .medium-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .date {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .comment-toggle {
+            color: var(--gold);
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* --- Zone Commentaire (Détails) --- */
+        .comment-body {
+            padding: 0 20px 20px 80px;
+            display: block; /* Sur un vrai site, on utiliserait du JS pour toggler */
+        }
+
+        .comment-text {
+            font-style: italic;
+            color: var(--gray);
+            padding: 15px;
+            border-left: 2px solid var(--purple);
+            background: rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .comment-text::before {
+            content: '"';
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--purple);
+            position: absolute;
+            left: -15px;
+            top: -10px;
+        }
+
+        .badge-employee {
+            font-size: 0.7rem;
+            background: var(--purple);
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Historique des Consultations</h1>
+
+    <div class="filter-bar">
+        <div class="filter-group">
+            <label for="date-filter">Date :</label>
+            <input type="date" id="date-filter">
+        </div>
+        <div class="filter-group">
+            <label for="medium-filter">Médium :</label>
+            <select id="medium-filter">
+                <option value="">Tous les médiums</option>
+                <option value="irma">Mme Irma</option>
+                <option value="gwen">Gwenäelle</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="history-container">
+        
+        <div class="consultation-item">
+            <div class="consultation-header">
+                <div class="main-info">
+                    <div class="avatar">👤</div>
+                    <div>
+                        <span class="medium-name">Mme Irma</span>
+                        <div class="date">13/03/2013</div>
+                    </div>
+                </div>
+                <div class="comment-toggle">
+                    Commentaire ▾
+                </div>
+            </div>
+            <div class="comment-body">
+                <div class="comment-text">
+                    Super consultation, le client semble réceptif aux prédictions astrales. Prévoir un suivi sur le plan professionnel.
+                </div>
+            </div>
+        </div>
+
+        <div class="consultation-item">
+            <div class="consultation-header">
+                <div class="main-info">
+                    <div class="avatar">👤</div>
+                    <div>
+                        <span class="medium-name">Professeur Tram</span>
+                        <div class="date">10/02/2013</div>
+                    </div>
+                </div>
+                <div class="comment-toggle">
+                    Aucun commentaire
+                </div>
+            </div>
+        </div>
+
+        <div class="consultation-item">
+            <div class="consultation-header">
+                <div class="main-info">
+                    <div class="avatar">👤</div>
+                    <div>
+                        <span class="medium-name">Gwenäelle</span>
+                        <div class="date">01/01/2013</div>
+                    </div>
+                </div>
+                <div class="comment-toggle">
+                    Commentaire ▸
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>
