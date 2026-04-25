@@ -180,6 +180,18 @@ public class Service {
         finally {
             JpaUtil.fermerContextePersistance();
         }
+        
+        String objet;
+        String corps;
+        if (clientInscrit) {
+            objet = "Binevenue chez PREDICT'IF";
+            corps = "Bonjour " + prenom + ", nous vous confirmons votre iscription au service PREDICT'IF. Rendez-vous vitesur notre site pour consulter votre profile astrologique et profiter des dons incroyables de nos mediums.";
+        }
+        else {
+            objet = "Echec de l'inscription chez PREDICT'IF";
+            corps = "Bonjour " + prenom + ", votre inscription au service PREDICT'IF a malencontreusement échoué... Merci de recommencer ultérieurement ou de vérifier si vous avez pas déjà un compte.";
+        }
+        Message.envoyerMail("contact@predictif.if", mail, objet, corps);
         return clientInscrit;
     }
     
@@ -379,6 +391,8 @@ public class Service {
             employeAffecte = true;
             System.out.println("l'employe affecte est : " + employeLibre);
             JpaUtil.validerTransaction();
+            String message = "Bonjour " + employeLibre.getPrenom() + ". Consultation requise pour " + client.getPrenom() + " " + client.getNom() + ". Médium à incarner : " + medium.getDenominiation();
+            Message.envoyerNotification(employeLibre.getNumeroTelephone(), message);
         } catch (Exception e) {
             JpaUtil.annulerTransaction();
             e.printStackTrace(System.err);
@@ -440,9 +454,9 @@ public class Service {
             if (employe.getEstEnConsultation()) {
                 consultation.setHeureDebut(deb_heure);
 
-                String telEmploye = employe.getNumeroTelephone();
+                String message = "Bonjour " + consultation.getClient().getPrenom() + ". J'ai bien reçu votre demande de consultation du " + consultation.getDate() + "à " + consultation.getHeureDebut() + ". Vous pouvez dès à présent me contacter au " + employe.getNumeroTelephone() + ". A tout de suite ! Médiumiquement vötre, " + consultation.getMedium().getDenominiation();
                 String telClient = consultation.getClient().getNumeroTelephone();
-                Message.envoyerNotification(telClient, telEmploye);
+                Message.envoyerNotification(telClient, message);
 
                 JpaUtil.ouvrirTransaction();
                 ConsultationDao.update(consultation);
