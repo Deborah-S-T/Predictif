@@ -35,12 +35,13 @@ public class Predictif {
     
     private static void scenarioTest () {
         Service service = new Service();
+        System.out.println("\n-------------------------------------------------");
         
         //Inscription et authentification d'un client
         System.out.println("Inscription et authentification\n-------------------------------------------------");
         LocalDate date = LocalDate.parse("1802-02-26");
-        Client c1 = new Client("victor.hugo@insa-lyon.fr", "Hugo", "Victor", date, "13 rue Albert Einstein 69100 Villeurbanne", "01 23 45 67 89", "m0tdepasse1");
-        Boolean resultat = service.inscrireClient(c1);
+        //Client c1 = new Client("victor.hugo@insa-lyon.fr", "Hugo", "Victor", date, "13 rue Albert Einstein 69100 Villeurbanne", "01 23 45 67 89", "m0tdepasse1");
+        Boolean resultat = service.inscrireClient("victor.hugo@insa-lyon.fr", "Hugo", "Victor", date, "13 rue Albert Einstein 69100 Villeurbanne", "01 23 45 67 89", "m0tdepasse1");
         assert resultat;
         Client c12 = service.authentifierClient("victor.hugo@insa-lyon.fr", "m0tdepasse1");
         System.out.println("\n-------------------------------------------------");
@@ -48,8 +49,8 @@ public class Predictif {
         // Inscription et authentification du deuxième client
         System.out.println("Inscription et authentification\n-------------------------------------------------");
         LocalDate date2 = LocalDate.parse("1802-02-26");
-        Client c2 = new Client("tableau.hugo@insa-lyon.fr", "Hugo", "Tableau", date2, "12 rue Albert Einstein 69100 Villeurbanne", "01 33 55 77 99", "m0tdepasse1");
-        Boolean resultat2 = service.inscrireClient(c2);
+        //Client c2 = new Client("tableau.hugo@insa-lyon.fr", "Hugo", "Tableau", date2, "12 rue Albert Einstein 69100 Villeurbanne", "01 33 55 77 99", "m0tdepasse1");
+        Boolean resultat2 = service.inscrireClient("tableau.hugo@insa-lyon.fr", "Hugo", "Tableau", date2, "12 rue Albert Einstein 69100 Villeurbanne", "01 33 55 77 99", "m0tdepasse1");
         assert resultat2;
         Client c22 = service.authentifierClient("tableau.hugo@insa-lyon.fr", "m0tdepasse1");
         System.out.println("\n-------------------------------------------------");

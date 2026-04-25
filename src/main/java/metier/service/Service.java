@@ -21,6 +21,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -132,10 +133,11 @@ public class Service {
         }
     }
     
-    public Boolean inscrireClient(Client client) {
+    public Boolean inscrireClient(String mail, String nom, String prenom, LocalDate dateDeNaissance, String adressePostal, String numeroTelephone, String motDePasse) {
         System.out.println("metier.service.Service.inscrireClient()");
         Boolean clientInscrit = false; 
         
+        Client client = new Client(mail, nom, prenom, dateDeNaissance, adressePostal, numeroTelephone, motDePasse);
         
         try {
             
