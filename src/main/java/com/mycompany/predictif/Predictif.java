@@ -74,7 +74,7 @@ public class Predictif {
         
         System.out.println("Adresses clients\n-------------------------------------------------");
         // on devra peut-être l'effacer vu que c'est juste récupérer les adresses disctinctes
-        System.out.println(service.getTousClients());
+        System.out.println(service.getAllClients());
         System.out.println("\n-------------------------------------------------");
         
         // l'employe en consultation pour les deux prochains services
