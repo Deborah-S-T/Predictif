@@ -317,6 +317,7 @@ une sous-section dédiée à la fenêtre.
 | ------------------------ | ------------------------------- | ---------- | ------- |
 | **INITIALISATION**       |                                 |            | → Service `getConsultationActuelle(idEmploye)` puis récupération des objets liés <br> Historique : `getConsultationsClientMedium(idClient, idMedium)` <br> Affichage en **mode préparation**. |
 | Démarrer la consultation | Bouton : Je me sens prêt.e      | Clic       | Passage en **mode consultation active**. |
+| Aller à la page d'historique du client pour consulter les commentaires avec d'autres médiums| Lien : titre de cette partie     | Clic       | Fermeture de la fenêtre Ma consultation → ouverture de la fenêtre Historique. |
 | Générer une prédiction   | Bouton : Prédire                | Clic       | → Service `getPredictionEnCasPanneInspiration(idClient, amour, sante, travail)` <br> Affichage du texte généré. |
 | Terminer la consultation | Bouton : Fin de consultation    | Clic       | → Service `finirConsultation(idEmploye, consultation, commentaire)` <br> Si OK : passage en **mode clôturé**. |
 
