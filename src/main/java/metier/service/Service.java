@@ -426,9 +426,9 @@ public class Service {
         return consultationsMedium;
     }
     
-    public List<Client> getTousClients() {
+    public List<Client> getAllClients() {
         List<Client> clients = new ArrayList<>();
-        System.out.println("metier.service.Service.getTousClients()");
+        System.out.println("metier.service.Service.getAllClients()");
         
         try {
             JpaUtil.creerContextePersistance();
